@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from flask_openapi3 import Info, Tag
 from flask_openapi3 import OpenAPI
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from datetime import datetime
 from flask import session
 
@@ -11,6 +12,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///example.sqlite3'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.secret_key = 'your_secret_key_here'
 db:SQLAlchemy = SQLAlchemy(app)
+CORS(app)
 
 # const
 class UserController:
@@ -32,16 +34,18 @@ class MyResponse:
     def success(data:list=[]):
         return {
             "code":0,
-            "message": "ok",
-            "data" : data
+            "status": "ok",
+            "data" : data,
+            "total" : len(data)
         }
     
     @staticmethod
     def fail(msg:str=""):
         return {
             "code":1,
-            "message": msg if len(msg)>0 else "fail",
-            "data":[]
+            "status": msg if len(msg)>0 else "fail",
+            "data":[],
+            "total": 0,
         }, 201
 
 # db Models
@@ -56,7 +60,7 @@ class Plate(db.Model):
             'pid': self.pid,
             'number': self.number,
             'access': self.access,
-            'period': self.period,
+            # 'period': self.period,
         }
 
     def __repr__(self) -> str:
@@ -66,8 +70,8 @@ class Plate(db.Model):
 # request models
 class PlateAddRequest(BaseModel):
     number:str
-    access:int
-    period:int
+    # access:int
+    # period:int
 
 class PlateDeleteRequest(BaseModel):
     pid:int
@@ -76,7 +80,7 @@ class PlateUpdateRequest(BaseModel):
     pid:int
     number:str
     access:int
-    period:int
+    # period:int
 
 class PlateCheckRequest(BaseModel):
     number:str
@@ -105,19 +109,19 @@ def userLogout():
 
 @app.post("/plate/add", summary="add plate", tags=PLATE_TAG)
 def addPlate(body:PlateAddRequest):
-    if 'uname' not in session or session['uname'] != 'admin':
-        return MyResponse.fail("No active session.")
-    if not Plate.query.filter_by(number=body.number).first() is None:
+    # if 'uname' not in session or session['uname'] != 'admin':
+        # return MyResponse.fail("No active session.")
+    if Plate.query.filter_by(number=body.number).first() is not None:
         return MyResponse.fail("License Plate has been recorded, do not re-enter.")
-    plate = Plate(number=body.number, access=body.number, period=body.period)
+    plate = Plate(number=body.number)
     db.session.add(plate)
     db.session.commit()
     return MyResponse.success()
 
 @app.post("/plate/delete", summary="delete plate", tags=PLATE_TAG)
 def deletePlate(body:PlateDeleteRequest):
-    if 'uname' not in session or session['uname'] != 'admin':
-        return MyResponse.fail("No active session.")
+    # if 'uname' not in session or session['uname'] != 'admin':
+        # return MyResponse.fail("No active session.")
     plate = Plate.query.filter_by(pid=body.pid).first()
     if plate is None:
         return MyResponse.fail("pid is out of range.")
@@ -128,8 +132,8 @@ def deletePlate(body:PlateDeleteRequest):
 
 @app.post("/plate/update", summary="update plate", tags=PLATE_TAG)
 def updatePlate(body:PlateUpdateRequest):
-    if 'uname' not in session or session['uname'] != 'admin':
-        return MyResponse.fail("No active session.")
+    # if 'uname' not in session or session['uname'] != 'admin':
+        # return MyResponse.fail("No active session.")
     plate:Plate = Plate.query.filter_by(pid=body.pid).first()
     if plate is None:
         return MyResponse.fail("pid is out of range.")
@@ -144,8 +148,8 @@ def updatePlate(body:PlateUpdateRequest):
 
 @app.post("/plate/list", summary="list plate", tags=PLATE_TAG)
 def listPlate():
-    if 'uname' not in session or session['uname'] != 'admin':
-        return MyResponse.fail("No active session.")
+    # if 'uname' not in session or session['uname'] != 'admin':
+        # return MyResponse.fail("No active session.")
     plates = Plate.query.all()
     return MyResponse.success([it.toJson() for it in plates])
     
