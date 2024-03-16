@@ -1,0 +1,33 @@
+annotated-types @ file:///home/conda/feedstock_root/build_artifacts/annotated-types_1696634205638/work
+attrs==23.2.0
+blinker @ file:///home/conda/feedstock_root/build_artifacts/blinker_1698890160476/work
+certifi==2024.2.2
+charset-normalizer==3.3.2
+click @ file:///home/conda/feedstock_root/build_artifacts/click_1692311806742/work
+Flask @ file:///home/conda/feedstock_root/build_artifacts/flask_1707043907952/work
+Flask-Cors==4.0.0
+flask-openapi3 @ file:///home/conda/feedstock_root/build_artifacts/flask-openapi3_1706445992569/work
+Flask-SQLAlchemy==3.1.1
+greenlet==3.0.3
+idna==3.6
+importlib_metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1709821103657/work
+itsdangerous @ file:///home/conda/feedstock_root/build_artifacts/itsdangerous_1648147185463/work
+Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1704966972576/work
+jsonschema==4.21.1
+jsonschema-specifications==2023.12.1
+MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1706899921127/work
+pydantic @ file:///home/conda/feedstock_root/build_artifacts/pydantic_1709075187841/work
+pydantic_core @ file:///home/conda/feedstock_root/build_artifacts/pydantic-core_1708700740324/work
+PySerials==0.0.0.dev2
+referencing==0.33.0
+requests==2.31.0
+rpds-py==0.18.0
+ruamel.yaml==0.17.40
+ruamel.yaml.clib==0.2.8
+ruamel.yaml.string==0.1.1
+SQLAlchemy==2.0.28
+tomlkit==0.11.8
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1708904622550/work
+urllib3==2.2.1
+Werkzeug @ file:///home/conda/feedstock_root/build_artifacts/werkzeug_1698235201373/work
+zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1695255097490/work

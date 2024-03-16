@@ -19,7 +19,7 @@ class UserService:
     @staticmethod
     def getAdmin():
         ADMIN = 'admin'
-        PASSWORD = '10086'
+        PASSWORD = '123456aaa'
         return ADMIN, PASSWORD
         
     @staticmethod

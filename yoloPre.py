@@ -17,6 +17,8 @@ import time
 import torch
 import cv2
 
+from toBackend import ToBackend
+
 waitQueue = queue.Queue()
 runFlag = True
 
@@ -338,6 +340,7 @@ class YoloPredictor(BasePredictor):
                 b = CHARS[plate[0][i]]
                 car_number_laber += b
 
+#==================================================================
             def count_non_lowercase_chars(input_string):
                 count = 0
                 for char in input_string:
@@ -370,7 +373,13 @@ class YoloPredictor(BasePredictor):
                 mostNum = find_most_common_string(self.carNumList)
                 self.carNumList.clear()
                 print(mostNum, end=', ')
-                print(count_non_lowercase_chars(mostNum) == 7)
+                print(count_non_lowercase_chars(mostNum) == 7, end=', ')
+                if ToBackend.checkPlate(mostNum):
+                    print("recorded plate.")
+                else:
+                    print("unrecorded plate.")
+
+# ======================================================================
 
             if self.save_txt:  # Write to file 写入文本文件
 
