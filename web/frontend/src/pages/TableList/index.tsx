@@ -1,4 +1,4 @@
-import { addRule, removeRule, rule, updateRule } from '@/services/ant-design-pro/api';
+import { addRule, currentUser, removeRule, rule, updateRule } from '@/services/ant-design-pro/api';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
 import {
@@ -11,13 +11,31 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import { Button, Drawer, Input, message } from 'antd';
+import { Button, Drawer, Input, Row, message } from 'antd';
 import React, { useRef, useState } from 'react';
-import type { FormValueType } from './components/UpdateForm';
+// import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { addPlatePlateAddPost, listPlatePlateListPost } from '@/services/plate_web/plate';
+import { addPlatePlateAddPost, alterPlatePlateAlterPost, deletePlatePlateDeletePost, listPlatePlateListPost, updatePlatePlateUpdatePost } from '@/services/plate_web/plate';
 
-/**
+
+const TableList: React.FC = () => {
+  /**
+   * @en-US Pop-up window of new window
+   * @zh-CN 新建窗口的弹窗
+   *  */
+  const [createModalOpen, handleModalOpen] = useState<boolean>(false);
+  /**
+   * @en-US The pop-up window of the distribution update window
+   * @zh-CN 分布更新窗口的弹窗
+   * */
+  const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
+  const [showDetail, setShowDetail] = useState<boolean>(false);
+  const actionRef = useRef<ActionType>();
+  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
+  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+
+
+  /**
  * @en-US Add node
  * @zh-CN 添加节点
  * @param fields
@@ -26,7 +44,7 @@ const handleAdd = async (fields: API.RuleListItem) => {
   const hide = message.loading('正在添加');
   try {
     const msg = await addPlatePlateAddPost({
-      ...fields,
+      number: fields.number,
     });
     hide();
     if (msg.code !== 0){
@@ -48,15 +66,23 @@ const handleAdd = async (fields: API.RuleListItem) => {
  *
  * @param fields
  */
-const handleUpdate = async (fields: FormValueType) => {
+const handleUpdate = async (fields: API.RuleListItem) => {
   const hide = message.loading('Configuring');
+  if (!currentRow) {
+    message.warning("no current row!")
+    return;
+  }
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
+    const res = await updatePlatePlateUpdatePost({
+      pid: currentRow.pid,
+      number: fields.number,
+      access: currentRow.access,
     });
     hide();
+    if (res.code === 1){
+      message.error(res.status);
+      return false;
+    }
     message.success('Configuration is successful');
     return true;
   } catch (error) {
@@ -70,14 +96,14 @@ const handleUpdate = async (fields: FormValueType) => {
  *  Delete node
  * @zh-CN 删除节点
  *
- * @param selectedRows
+ * @param selectedRow
  */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+const handleRemove = async (selectedRow: API.RuleListItem) => {
   const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
+  if (!selectedRow) return true;
   try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
+    await deletePlatePlateDeletePost({
+      pid: selectedRow.pid,
     });
     hide();
     message.success('Deleted successfully and will refresh soon');
@@ -88,21 +114,25 @@ const handleRemove = async (selectedRows: API.RuleListItem[]) => {
     return false;
   }
 };
-const TableList: React.FC = () => {
-  /**
-   * @en-US Pop-up window of new window
-   * @zh-CN 新建窗口的弹窗
-   *  */
-  const [createModalOpen, handleModalOpen] = useState<boolean>(false);
-  /**
-   * @en-US The pop-up window of the distribution update window
-   * @zh-CN 分布更新窗口的弹窗
-   * */
-  const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-  const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+
+const handleAccess = async (selectedRow: API.RuleListItem) => {
+  const hide = message.loading('changing access.');
+  if (!selectedRow) return true;
+  try {
+    await alterPlatePlateAlterPost({
+      pid: selectedRow.pid,
+    });
+    hide();
+    message.success('Deleted successfully and will refresh soon');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('Delete failed, please try again');
+    return false;
+  }
+
+}
+
 
   /**
    * @en-US International configuration
@@ -110,6 +140,11 @@ const TableList: React.FC = () => {
    * */
 
   const columns: ProColumns<API.RuleListItem>[] = [
+    {
+      title: 'id',
+      dataIndex: 'pid',
+      valueType: 'index',
+    },
     {
       title: '车牌号',
       dataIndex: 'number',
@@ -144,6 +179,38 @@ const TableList: React.FC = () => {
         >
           修改
         </a>,
+        
+        record.access === 0?
+        <a
+          key="del"
+          onClick = {() => {
+            handleAccess(record);
+            actionRef.current?.reloadAndRest?.();
+          }}
+        >
+          授权
+        </a> :
+        <a
+          key="del"
+          onClick = {() => {
+            handleAccess(record);
+            actionRef.current?.reloadAndRest?.();
+          }}
+        >
+          禁止
+        </a>       
+        ,
+        <Button
+          key="del"
+          danger
+          type = "text"
+          onClick = {() => {
+            handleRemove(record);
+            actionRef.current?.reloadAndRest?.();
+          }}
+        >
+          删除
+        </Button>,
       ],
     },
   ];
@@ -245,6 +312,7 @@ const TableList: React.FC = () => {
       
 
       <UpdateForm
+        columns={columns}
         onSubmit={async (value) => {
           const success = await handleUpdate(value);
           if (success) {
@@ -261,8 +329,9 @@ const TableList: React.FC = () => {
             setCurrentRow(undefined);
           }
         }}
-        updateModalOpen={updateModalOpen}
+        // updateModalOpen={updateModalOpen}
         values={currentRow || {}}
+        visible={updateModalOpen}
       />
 
       <Drawer
@@ -274,20 +343,21 @@ const TableList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.name && (
+        {currentRow?.pid && (
           <ProDescriptions<API.RuleListItem>
             column={2}
-            title={currentRow?.name}
+            title={currentRow?.pid}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.name,
+              id: currentRow?.pid,
             }}
             columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
           />
         )}
       </Drawer>
+
     </PageContainer>
   );
 };

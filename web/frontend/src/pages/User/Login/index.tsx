@@ -143,7 +143,7 @@ const Login: React.FC = () => {
           }}
           logo={<img alt="logo" src="/logo.svg" />}
           title="License Plate Management"
-          subTitle={'Ant Design 是西湖区最具影响力的 Web 设计规范'}
+          subTitle={'车牌管理系统'}
           initialValues={{
             autoLogin: true,
           }}

@@ -17,6 +17,21 @@ export async function addPlatePlateAddPost(
   });
 }
 
+/** alter access POST /plate/alter */
+export async function alterPlatePlateAlterPost(
+  body: API.PlateDeleteRequest,
+  options?: { [key: string]: any },
+) {
+  return request<any>('/plate/alter', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** check plate POST /plate/check */
 export async function checkPlatePlateCheckPost(
   body: API.PlateCheckRequest,

@@ -15,7 +15,7 @@ db:SQLAlchemy = SQLAlchemy(app)
 CORS(app)
 
 # const
-class UserController:
+class UserService:
     @staticmethod
     def getAdmin():
         ADMIN = 'admin'
@@ -24,7 +24,12 @@ class UserController:
         
     @staticmethod
     def isAdmin(uname:str, pwd:str) -> bool:
-        return (uname, pwd) == UserController.getAdmin()
+        return (uname, pwd) == UserService.getAdmin()
+
+class PlateService:
+    @staticmethod
+    def isPlateValid(plate:str):
+        return len(plate) < 16
     
 PLATE_TAG = [Tag(name="plate", description="license plate management")]
 USER_TAG = [Tag(name="user", description="login & logout")]
@@ -93,7 +98,7 @@ class LoginRequest(BaseModel):
 # backend api
 @app.post("/user/login", summary="login", tags=USER_TAG)
 def userLogin(body:LoginRequest):
-    if UserController.isAdmin(body.uname, body.password):
+    if UserService.isAdmin(body.uname, body.password):
         session['uname'] = body.uname
         return MyResponse.success()
     else:
@@ -101,11 +106,12 @@ def userLogin(body:LoginRequest):
 
 @app.post("/user/logout", summary="logout", tags=USER_TAG)
 def userLogout():
-    if 'uname' in session:
-        session.pop('uname')
-        return MyResponse.success()
-    else:
-        return MyResponse.fail("No active session.")
+    # if 'uname' in session:
+    #     session.pop('uname')
+    #     return MyResponse.success()
+    # else:
+    #     return MyResponse.fail("No active session.")
+    return MyResponse.success()
 
 @app.post("/plate/add", summary="add plate", tags=PLATE_TAG)
 def addPlate(body:PlateAddRequest):
@@ -113,6 +119,8 @@ def addPlate(body:PlateAddRequest):
         # return MyResponse.fail("No active session.")
     if Plate.query.filter_by(number=body.number).first() is not None:
         return MyResponse.fail("License Plate has been recorded, do not re-enter.")
+    if not PlateService.isPlateValid(body.number):
+        return MyResponse.fail("Invalid license plate.")
     plate = Plate(number=body.number)
     db.session.add(plate)
     db.session.commit()
@@ -141,8 +149,10 @@ def updatePlate(body:PlateUpdateRequest):
         if not Plate.query.filter_by(number=body.number).first() is None:
             return MyResponse.fail("License Plate has been recorded, do not re-enter.")
     plate.access = body.access
+    if not PlateService.isPlateValid(body.number):
+        return MyResponse.fail("Invalid license number.")
     plate.number = body.number
-    plate.period = body.period
+    # plate.period = body.period
     db.session.commit()
     return MyResponse.success()
 
@@ -153,6 +163,16 @@ def listPlate():
     plates = Plate.query.all()
     return MyResponse.success([it.toJson() for it in plates])
     
+@app.post("/plate/alter", summary="alter access", tags=PLATE_TAG)
+def alterPlate(body:PlateDeleteRequest):
+    plate:Plate = Plate.query.filter_by(pid=body.pid).first()
+    if plate is None:
+        return MyResponse.fail("pid is out of range.")
+    plate.access = (plate.access + 1) % 2
+    db.session.commit()
+    return MyResponse.success()
+
+
 @app.post("/plate/check", summary="check plate", tags=PLATE_TAG)
 def checkPlate(body:PlateCheckRequest):
     plate:Plate = Plate.query.filter_by(number=body.number).first() 

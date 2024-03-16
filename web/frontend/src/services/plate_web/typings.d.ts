@@ -7,12 +7,8 @@ declare namespace API {
   };
 
   type PlateAddRequest = {
-    /** Access */
-    // access: number;
     /** Number */
     number: string;
-    /** Period */
-    // period: number;
   };
 
   type PlateCheckRequest = {
@@ -30,8 +26,6 @@ declare namespace API {
     access: number;
     /** Number */
     number: string;
-    /** Period */
-    period: number;
     /** Pid */
     pid: number;
   };
