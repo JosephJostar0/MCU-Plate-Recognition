@@ -189,7 +189,7 @@ def checkPlate(body:PlateCheckRequest):
 @app.post("/plate/current", summary="get current plate", tags=PLATE_TAG)
 def currentPlate():
     flag = 0
-    number = "no plate"
+    number = "no plate detected."
     try:
         number = plateQueue.get(timeout=0.1)
         plate:Plate = Plate.query.filter_by(number=number).first()
