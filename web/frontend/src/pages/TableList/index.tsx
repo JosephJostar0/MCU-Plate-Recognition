@@ -1,4 +1,3 @@
-import { addRule, currentUser, removeRule, rule, updateRule } from '@/services/ant-design-pro/api';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
 import {
@@ -11,11 +10,11 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import { Button, Drawer, Input, Row, message } from 'antd';
+import { Button, Drawer, Input, List, Row, message } from 'antd';
 import React, { useRef, useState } from 'react';
 // import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { addPlatePlateAddPost, alterPlatePlateAlterPost, deletePlatePlateDeletePost, listPlatePlateListPost, updatePlatePlateUpdatePost } from '@/services/plate_web/plate';
+import { addPlatePlateAddPost, alterPlatePlateAlterPost, deletePlatePlateDeletePost, listPlatePlateListPost, updatePlatePlateUpdatePost,currentPlatePlateCurrentPost } from '@/services/plate_web/plate';
 
 
 const TableList: React.FC = () => {
@@ -214,6 +213,19 @@ const handleAccess = async (selectedRow: API.RuleListItem) => {
       ],
     },
   ];
+  
+    const test =async () => {
+      const msg = await currentPlatePlateCurrentPost();
+      if (msg.code === 0){
+        if (msg.data[0].access===1) {
+          message.success(msg.data[0].plate);
+        } else {
+          message.warning(msg.data[0].plate);
+        }
+      }
+    }
+    const intervalId = setInterval(test, 5000);
+
   return (
     <PageContainer>
       <ProTable<API.RuleListItem, API.PageParams>

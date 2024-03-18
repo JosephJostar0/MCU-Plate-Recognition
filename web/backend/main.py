@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 from flask import session
+from queue import Queue
 
 info = Info(title="License Plate API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
@@ -13,6 +14,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.secret_key = 'your_secret_key_here'
 db:SQLAlchemy = SQLAlchemy(app)
 CORS(app)
+
+plateQueue = Queue()
 
 # const
 class UserService:
@@ -41,7 +44,7 @@ class MyResponse:
             "code":0,
             "status": "ok",
             "data" : data,
-            "total" : len(data)
+            "total" : len(data),
         }
     
     @staticmethod
@@ -183,6 +186,28 @@ def checkPlate(body:PlateCheckRequest):
         return MyResponse.fail("This car has no access.")
     return MyResponse.success()
 
+@app.post("/plate/current", summary="get current plate", tags=PLATE_TAG)
+def currentPlate():
+    flag = 0
+    number = "no plate"
+    try:
+        number = plateQueue.get(timeout=0.1)
+        plate:Plate = Plate.query.filter_by(number=number).first()
+        if not plate is None:
+            flag = plate.access
+    except TimeoutError:
+        pass
+    finally:
+        return MyResponse.success([{
+            "plate":number,
+            "access": flag,
+        }])
+
+@app.post("/plate/set", summary="set current plate", tags=PLATE_TAG)
+def setPlate(body:PlateCheckRequest):
+    number = body.number
+    plateQueue.put(number)
+    return MyResponse.success()
 
 def main():
     with app.app_context():

@@ -47,6 +47,14 @@ export async function checkPlatePlateCheckPost(
   });
 }
 
+/** get current plate POST /plate/current */
+export async function currentPlatePlateCurrentPost(options?: { [key: string]: any }) {
+  return request<API.CurrentPlate>('/plate/current', {
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
 /** delete plate POST /plate/delete */
 export async function deletePlatePlateDeletePost(
   body: API.PlateDeleteRequest,
@@ -66,6 +74,21 @@ export async function deletePlatePlateDeletePost(
 export async function listPlatePlateListPost(options?: { [key: string]: any }) {
   return request<any>('/plate/list', {
     method: 'POST',
+    ...(options || {}),
+  });
+}
+
+/** set current plate POST /plate/set */
+export async function setPlatePlateSetPost(
+  body: API.PlateCheckRequest,
+  options?: { [key: string]: any },
+) {
+  return request<any>('/plate/set', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   });
 }

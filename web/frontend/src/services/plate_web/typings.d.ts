@@ -1,3 +1,5 @@
+import { List } from "lodash";
+
 declare namespace API {
   type LoginRequest = {
     /** Password */
@@ -28,6 +30,16 @@ declare namespace API {
     number: string;
     /** Pid */
     pid: number;
+  };
+
+  type CurrentPlate = {
+    code : number;
+    data : {
+      access: boolean;
+      plate: string;
+    }[];
+    status: string;
+    total : number;
   };
 
   type ValidationErrorModel = {

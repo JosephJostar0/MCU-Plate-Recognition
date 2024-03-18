@@ -89,4 +89,47 @@ declare namespace API {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+
+  type LoginRequest = {
+    /** Password */
+    password: string;
+    /** Uname */
+    uname: string;
+  };
+
+  type PlateAddRequest = {
+    /** Number */
+    number: string;
+  };
+
+  type PlateCheckRequest = {
+    /** Number */
+    number: string;
+  };
+
+  type PlateDeleteRequest = {
+    /** Pid */
+    pid: number;
+  };
+
+  type PlateUpdateRequest = {
+    /** Access */
+    access: number;
+    /** Number */
+    number: string;
+    /** Pid */
+    pid: number;
+  };
+
+  type CurrentPlate = {
+    code : number;
+    data : {
+      access: boolean;
+      plate: string;
+    }[];
+    status: string;
+    total : number;
+    temp : string;
+  };
 }
