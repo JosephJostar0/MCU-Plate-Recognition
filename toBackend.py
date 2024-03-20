@@ -8,5 +8,8 @@ class ToBackend:
         data = {
             'number' : plate
         }
-        res = requests.post(CHECK_PLATE, data=data, timeout=0.5)
-        return res.status_code == 200
+        try:
+            res = requests.post(CHECK_PLATE, data=data, timeout=0.5)
+            return res.status_code == 200
+        except:
+            return False
