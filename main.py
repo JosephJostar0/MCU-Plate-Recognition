@@ -73,6 +73,7 @@ class ReceivePic:
         self.timeout = timeout
 
         self.picDir = picDir
+        self.picIndex = 0
 
         self.cache = b''
         self.cacheSize = 307201
@@ -152,14 +153,16 @@ class ReceivePic:
         global runFlag
         while runFlag:
             try:
-                imgArr = self.msgQueue.get(timeout=3)
-                pname = self.picDir + datetime.now().strftime("%y%m%d_%H%M%S") + ".png"
+                imgArr = self.msgQueue.get(timeout=5)
+                # pname = self.picDir + datetime.now().strftime("%y%m%d_%H%M%S") + ".png"
+                pname = self.picDir + 'pic' + str(self.picDir) + '.png'
+                self.picDir = (self.picDir + 1) % 10
 
-                cnt = 0
-                temp = pname
-                while pathlib.Path(pname).exists():
-                    pname = temp[:-4] + "(" + str(cnt) + ").png"
-                    cnt += 1
+                # cnt = 0
+                # temp = pname
+                # while pathlib.Path(pname).exists():
+                    # pname = temp[:-4] + "(" + str(cnt) + ").png"
+                    # cnt += 1
 
                 Image.fromarray(imgArr).save(pname)
                 waitQueue.put(pname)

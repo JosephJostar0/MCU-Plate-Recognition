@@ -374,10 +374,8 @@ class YoloPredictor(BasePredictor):
                 self.carNumList.clear()
                 print(mostNum, end=', ')
                 print(count_non_lowercase_chars(mostNum) == 7, end=', ')
-                if ToBackend.checkPlate(mostNum):
-                    print("recorded plate.")
-                else:
-                    print("unrecorded plate.")
+                print(ToBackend.checkPlate(mostNum))
+                ToBackend.setPlate(mostNum)
 
 # ======================================================================
 
