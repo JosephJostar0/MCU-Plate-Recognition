@@ -181,10 +181,10 @@ def checkPlate(body:PlateCheckRequest):
     plate:Plate = Plate.query.filter_by(number=body.number).first() 
     if plate is None:
         return MyResponse.fail("Invalid License Plate.")
-    current = datetime.now().timestamp()
-    if not plate.access or current > plate.period:
-        return MyResponse.fail("This car has no access.")
-    return MyResponse.success()
+    # current = datetime.now().timestamp()
+    # if not plate.access or current > plate.period:
+    #     return MyResponse.fail("This car has no access.")
+    return MyResponse.success('valid access.')
 
 @app.post("/plate/current", summary="get current plate", tags=PLATE_TAG)
 def currentPlate():

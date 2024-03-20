@@ -10,7 +10,7 @@ class ToBackend:
             'number' : plate
         }
         try:
-            res = requests.post(CHECK_PLATE, data=data, timeout=1)
+            res = requests.post(CHECK_PLATE, json=data, timeout=1)
             return res.json().get('status')
         except:
             return "unrecorded plate." 
@@ -21,6 +21,6 @@ class ToBackend:
             'number':plate,
         }
         try:
-            requests.post(SET_PLATE, data=data, timeout=1)
+            requests.post(SET_PLATE, json=data, timeout=1)
         except:
             return
