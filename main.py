@@ -155,8 +155,8 @@ class ReceivePic:
             try:
                 imgArr = self.msgQueue.get(timeout=5)
                 # pname = self.picDir + datetime.now().strftime("%y%m%d_%H%M%S") + ".png"
-                pname = self.picDir + 'pic' + str(self.picDir) + '.png'
-                self.picDir = (self.picDir + 1) % 10
+                pname = self.picDir + 'pic' + str(self.picIndex) + '.png'
+                self.picDir = (self.picIndex + 1) % 10
 
                 # cnt = 0
                 # temp = pname
