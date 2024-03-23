@@ -125,7 +125,7 @@ declare namespace API {
   type CurrentPlate = {
     code : number;
     data : {
-      access: boolean;
+      access: number;
       plate: string;
     }[];
     status: string;

@@ -5,5 +5,6 @@ export default [
     ] 
   },
   // { path: '/test', layout: true, routes: [{path:'/test', component:'./Test'}]},
+  { path: '/current', layout: false, name: "current", routes: [{path: '/current/temp', component: './Current'}]},
   { path: '*', layout: false, component: './404' },
 ];
